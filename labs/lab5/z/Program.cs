@@ -10,7 +10,6 @@ namespace z
     public string ip;
     public int speed;
 }
-
     class Program
     {
         static void ProcessChar(string[] subcommand)
@@ -63,7 +62,7 @@ namespace z
            }
            else if(subcommand[1] == "substr")
            {
-               if(subcommand.Length != 3)
+               if(subcommand.Length <= 2)
                {
                    Console.WriteLine("Incorrect command! More subcommands required");
                }
@@ -75,7 +74,7 @@ namespace z
            }
            else
            {
-               Console.WriteLine("Incorrect subcommand! Your subcommand is: {0}. Please, true again.", subcommand[1]);
+               Console.WriteLine("Incorrect subcommand! Your subcommand is: {0}. Please, try again.", subcommand[1]);
            }
         }
         static void ProcessCSV(string[] subcommand)
@@ -125,7 +124,7 @@ namespace z
            }
            else
            {
-               Console.WriteLine("Incorrect subcommand! Your subcommand is: {0}. Please, true again.", subcommand[1]);
+               Console.WriteLine("Incorrect subcommand! Your subcommand is: {0}. Please, try again.", subcommand[1]);
            }
         }
         
@@ -189,12 +188,9 @@ namespace z
         static string[,] t3Table = new string[0,0];
         static Provider[] t3Providers = new Provider[0];
 
-        static void CSVLoad(string entered)
+        static string[,] CsvToTable(string csvText) 
         {
-            string path = "./data.csv";
-            t3CsvText = ReadAllText(path);
-
-            string[] lines = t3CsvText.Split("\r\n");
+            string[] lines = csvText.Split("\r\n");
 
             string[] lines_without_row1 = new string[lines.Length - 1];
             for (int i = 1; i < lines.Length; i++)
@@ -206,29 +202,28 @@ namespace z
             int num_rows = lines_without_row1.Length;
             int num_cols = lines_without_row1[0].Split(',').Length;
 
-            string[,] arr_for_task3Table = new string[num_rows, num_cols];
+            string[,] arr_for_t3Table = new string[num_rows, num_cols];
             for (int r = 0; r < num_rows; r++)
             {
                 string[] line_r = lines_without_row1[r].Split(',');
                 for (int c = 0; c < num_cols; c++)
                 {
-                    arr_for_task3Table[r, c] = line_r[c];
+                    arr_for_t3Table[r, c] = line_r[c];
                 }
             }
-            
-            t3Table = arr_for_task3Table;
 
-            
+            t3Table = arr_for_t3Table;
+
             Array.Resize(ref t3Providers, t3Table.GetLength(0));
 
-            for (int r = 0; r < t3Table.GetLength(0); r++)
+           for (int r = 0; r < arr_for_t3Table.GetLength(0); r++)
             {
-                string[] row = new string[t3Table.GetLength(1)];
-                for (int c = 0; c < t3Table.GetLength(1); c++)
+                string[] row = new string[arr_for_t3Table.GetLength(1)];
+                for (int c = 0; c < arr_for_t3Table.GetLength(1); c++)
                 {
-                    row[c] = t3Table[r, c];
+                    row[c] = arr_for_t3Table[r, c];
                 }
-                t3Providers[r] = RowToProviders(row);
+                t3Providers[r] = StringToProviders(row, t3Table);
             }
 
             string[,] arr = new string[lines.Length, lines[0].Split(',').Length];
@@ -240,7 +235,48 @@ namespace z
                     arr[r, c] = line_r[c];
                 }
             }
-            t3Table = arr;
+            return arr;
+        }
+
+         static Provider[] TableToEntities(string[,] csvTable) {
+            Provider[] provider = new Provider[csvTable.GetLength(0)]; 
+            for (int r = 0; r < csvTable.GetLength(0)-1; r++)
+            {
+                string[] row = new string[csvTable.GetLength(1)];
+                for (int c = 0; c < csvTable.GetLength(1); c++)
+                {
+                    row[c] = csvTable[r+1, c];
+                }
+                provider[r] = StringToProviders(row , csvTable);
+            }
+            return provider;
+        }
+        
+        static Provider StringToProviders(string[] row, string[,] csvTable)
+        {
+            if (row.Length < csvTable.GetLength(1))
+            {
+                return new Provider();
+            }
+            int id = int.Parse(row[0]);
+            string name = row[1];
+            string ip = row[2];
+            int speed = int.Parse(row[3]);
+            Provider provider = new Provider();
+            provider.id = id;
+            provider.name = name;
+            provider.ip = ip;
+            provider.speed=speed;
+            return provider;
+        }
+
+
+        static void CSVLoad(string entered)
+        {
+            string path = "./data.csv";
+            t3CsvText = ReadAllText(path);
+            t3Table = CsvToTable(t3CsvText);
+            
         }
 
         static void CSVText()
@@ -262,26 +298,6 @@ namespace z
             }
         }
 
-        static Provider RowToProviders(string[] row)
-        {
-            
-            if (row.Length < t3Table.GetLength(1))
-            {
-                return new Provider();
-            }
-            int id = int.Parse(row[0]);
-            string name = row[1];
-            string ip = row[2];
-            int speed = int.Parse(row[3]);
-            Provider provider = new Provider();
-            provider.id = id;
-            provider.name = name;
-            provider.ip = ip;
-            provider.speed=speed;
-            return provider;
-        }
-
-
         static void CSVEntities(string entered, string[] input)
         {        
             foreach (Provider it in t3Providers)
@@ -302,42 +318,41 @@ namespace z
             Console.WriteLine("\r~~>Provider: {0} \r\n    |Id: {1}\r\n    |Ip: {2}\r\n    |Speed: {3}", in_provider.name, in_provider.id, in_provider.ip, in_provider.speed);
         }
         
-        static void ProviderToTable()
+        static string[,] ProvidersToTable(Provider[] providers, string[,] table) 
         {
-            for (int i = 0; i < t3Table.GetLength(0)-1; i++)
+             for (int i = 0; i < table.GetLength(0) - 1; i++)
             {
-                t3Table[i+1, 0] = Convert.ToString(t3Providers[i].id);
-                t3Table[i+1, 1] = t3Providers[i].name;
-                t3Table[i+1, 2] = t3Providers[i].ip;
-                t3Table[i+1, 3] = Convert.ToString(t3Providers[i].speed);
+                table[i+1, 0] = Convert.ToString(providers[i].id);
+                table[i+1, 1] = providers[i].name;
+                table[i+1, 2] = providers[i].ip;
+                table[i+1, 3] = Convert.ToString(providers[i].speed);
             }
+            return table;
+        }
+         static void ProviderToTable()
+         {
+             t3Table = ProvidersToTable(t3Providers, t3Table);
+         }
+        
+        static string TableToString(string[,] table)
+        {
+            string text;
+            string[] row_before_join = new string[table.GetLength(1)];
+            
+            string[] row = new string[table.GetLength(0)];
+            for (int item = 0; item < table.GetLength(0); item++)
+            {
+                row_before_join[0] = table[item, 0];
+                row_before_join[1] = table[item, 1];
+                row_before_join[2] = table[item, 2];
+                row_before_join[3] = table[item, 3];
+
+                row[item] = String.Join(",", row_before_join);
+            }
+                text = String.Join("\r\n",row);
+            return text;
         }
         
-        static string[] ProviderToRow(string[] row)
-        {
-            
-            string[] row_before_join = new string[t3Table.GetLength(1)];
-            
-            row = new string[t3Providers.Length+1];
-            for (int item = 0; item <= row_before_join.Length; item++)
-            {
-                row_before_join[0] = Convert.ToString(t3Providers[item].id);
-                row_before_join[1] = t3Providers[item].name;
-                row_before_join[2] = t3Providers[item].ip;
-                row_before_join[3] = Convert.ToString(t3Providers[item].speed);
-
-                row[item+1] = String.Join(",", row_before_join); 
-            }
-            
-            string[] arr1 = new string[t3Table.GetLength(1)];
-            for (int i = 0; i < t3Table.GetLength(1); i++ )
-            {
-                arr1[i] = t3Table[0, i];
-            }
-            row[0] = String.Join(",", arr1);
-                
-            return row;
-        }
         static void CSVSetIndex(string entered, string[] input)
         {
             if(input.Length != 5)
@@ -364,18 +379,15 @@ namespace z
                 break;
             }
 
-            ProviderToTable();
-            string[] row = new string[t3Table.GetLength(1)];
-            string[] row_after_changes = ProviderToRow(row);
-            t3CsvText = String.Join("\r\n", row_after_changes);
+            string[,] table = ProvidersToTable(t3Providers, t3Table);
+            t3CsvText = TableToString(table);
         }
         static void CSVSave()
         {
             WriteAllText("./data.csv", t3CsvText);
             Console.WriteLine("Your data has been saved.");
         }
-        
-        
+                
         static void Main()
         {
             while(true)
@@ -383,12 +395,13 @@ namespace z
                 Console.WriteLine("Write command: ");
                 string command = Console.ReadLine();
                 Console.WriteLine("~{0}~", command);
+                // string command = "csv.set.1.name.hui";
                 string[] subcommand = command.Split('.');
                 switch(subcommand[0])
                 {
                     case "char":
                         ProcessChar(subcommand);
-                        continue;
+                        continue;   
                     case "string":
                         ProcessString(subcommand);
                         continue;
