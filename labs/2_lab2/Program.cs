@@ -2,7 +2,6 @@
 using System.Data;
 using static System.Console;
 using Microsoft.Data.Sqlite;
-using static System.IO.File;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
@@ -89,7 +88,7 @@ namespace _2_lab2
                 pr.speed = int.Parse(reader.GetString(2));
                 pr.nameClient = reader.GetString(3);
             }
-            
+
             reader.Close();
             return pr;  
         }
@@ -190,14 +189,14 @@ namespace _2_lab2
             string[] parts = command.Split(' ');
             int nId = int.Parse(parts[1]);
             Provider p1 = pr1.GetById(nId, connect);
-            // if(p1 == null)
-            // {
-            //     WriteLine($"No found provider with that id: {nId}");
-            // }
-            // else
-            // {
+            if(p1 == null)
+            {
+                WriteLine($"No found provider with that id: {nId}");
+            }
+            else
+            {
                 WriteLine($"Provider: |{p1.id}| {p1.nameProvider} *Speed: {p1.speed}Mb/s *User: {p1.nameClient}");
-            //}
+            }
         }       
         static void ProcessDeleteByID(string command, ProviderRepository pr1, SqliteConnection connect)
         {
@@ -314,68 +313,5 @@ namespace _2_lab2
             }
         connect.Close();  
         }
-
-        //     string csvF = "./sql.csv";
-        //     string databaseFile = "./povdb.db";
-        //     SqliteConnection connect = new SqliteConnection($"Data Source = {databaseFile}");
-        //     connect.Open();
-
-        //     ConnectionState state = connect.State;
-        //     if(state == ConnectionState.Open)
-        //     {
-        //         StreamReader reader = new StreamReader(csvF);
-        //         string line = "";
-        //         while(line != null)
-        //         {
-        //             line = reader.ReadLine();
-        //             if(line != null)
-        //             {
-        //                 Provider prov = ConvertToProvider(line);
-        //                 SqliteCommand command = connect.CreateCommand();
-        //                 command.CommandText = @"
-        //                 INSERT INTO providers (id, nameProvider, speed, nameClient)
-        //                 VALUES ($id, $nameProvider, $speed, $nameClient)
-        //                 ";
-        //                 command.Parameters.AddWithValue("$id", prov.id);
-        //                 command.Parameters.AddWithValue("$nameProvider", prov.nameProvider);
-        //                 command.Parameters.AddWithValue("$speed", prov.speed);
-        //                 command.Parameters.AddWithValue("$nameClient", prov.nameClient);
-
-        //                 int ch = command.ExecuteNonQuery();
-        //                 if(ch != 1)
-        //                 {
-        //                     throw new Exception("Error");
-        //                 }
-        //             }
-        //         }
-        //         reader.Close();
-
-        //     }
-        //     else
-        //     {
-        //         WriteLine("Error.");
-        //     }
-        //     connect.Close();
-         
-        //  static Provider ConvertToProvider(string line)
-        // {
-        //     string[] parts = line.Split(',');
-        //     if(parts.Length != 4)
-        //     {
-        //         throw new ArgumentException("Not enought elements");
-        //     }
-        //     Provider pr = new Provider();
-        //     if(!int.TryParse(parts[0], out pr.id))
-        //     {
-        //         throw new ArgumentException("Not correct id");
-        //     }
-        //     pr.nameProvider = parts[1];
-        //     if(!int.TryParse(parts[2], out pr.speed))
-        //     {
-        //         throw new ArgumentException("Not correct speed");
-        //     }
-        //     pr.nameClient = parts[3];
-        //     return pr;
-        // }
     }
 }
