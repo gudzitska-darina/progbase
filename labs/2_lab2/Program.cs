@@ -29,13 +29,13 @@ namespace _2_lab2
             _items = new Provider[16];  
             _size = 0;
         }
-        public void Add(Provider newBook) 
+        public void Add(Provider newPr) 
         {
             if (this._size >= this._items.Length)
             {
                 this.Expand();
             }
-            this._items[this._size] = newBook;
+            this._items[this._size] = newPr;
             this._size += 1;
         }
         private void Expand()
@@ -270,7 +270,6 @@ namespace _2_lab2
             ConnectionState state = connect.State;
             if(state == ConnectionState.Open)
             {
-                Provider pr = new Provider();
                 ProviderRepository pr1 = new ProviderRepository(connect);
                 while(true)
                 {
