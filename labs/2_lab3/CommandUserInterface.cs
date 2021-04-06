@@ -30,10 +30,13 @@ public class CommandUserInterface
                 else if(sub[0] == "beta") main = beta;
                 else{logger.LogError($"Invalid name for set: {sub[0]}"); continue;}
 
-                if(sub.Length > 2 && !int.TryParse(sub[2], out n))
+                if(sub[1] != "read" && sub.Length > 2 && !int.TryParse(sub[2], out n))
                 {
-                    logger.LogError($"Invalid value for set: {sub[2]}");
-                    continue;
+                    if(sub[1] != "write")
+                    {
+                        logger.LogError($"Invalid value for set: {sub[2]}");
+                        continue;
+                    }
                 }
 
                 if(sub[1] == "add")
