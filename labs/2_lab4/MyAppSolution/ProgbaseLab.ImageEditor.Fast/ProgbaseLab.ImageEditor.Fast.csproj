@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\ProgbaseLab.ImageEditor.Common\ProgbaseLab.ImageEditor.Common.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="OpenCvSharp4" Version="4.5.2.20210404" />
+    <PackageReference Include="OpencvSharp4.runtime.win" Version="4.5.2.20210404" />
+    <PackageReference Include="OpenCvSharp4.Windows" Version="4.0.0.20190108" />
+    <PackageReference Include="System.Drawing.Common" Version="5.0.2" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+</Project>
