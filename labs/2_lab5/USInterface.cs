@@ -21,6 +21,12 @@ public class USInterface
                 break;
             }
             string[] sub = command.Split(' ');
+            if(courses.courses == null && sub[0] != "load")
+            {
+                WriteLine("Xml file has not yet been deserialized.");
+                continue;
+            }
+
             if(sub.Length == 2)
             {
                 if(sub[0] == "load")
