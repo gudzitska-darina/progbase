@@ -1,6 +1,7 @@
 using System;
 using static System.Console;
 using System.Collections.Generic;
+using System.IO;
 
 
 public class USInterface
@@ -24,8 +25,16 @@ public class USInterface
             {
                 if(sub[0] == "load")
                 {
-                    courses = ser.Deserialize(sub[1]);
-                    WriteLine("Deserialization success.");
+                    if(File.Exists(sub[1]))
+                    {   
+                        courses = ser.Deserialize(sub[1]);
+                        WriteLine("Deserialization success.");
+                    }
+                    else
+                    {
+                        WriteLine("File does not exist.");
+                    }
+                    
                 }
                 else if(sub[0] == "print")
                 {
